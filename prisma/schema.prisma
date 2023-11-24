@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "cockroachdb"
     // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
     // Further reading:
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
@@ -15,7 +15,7 @@ datasource db {
 }
 
 model Post {
-    id        Int      @id @default(autoincrement())
+    id        Int      @id @default(sequence())
     name      String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -70,4 +70,106 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+// overall form
+model Form {
+  formId        String       @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  createdBy String
+
+  name      String
+  description String?
+
+  // Define a one-to-many relationship between Form and FormSection
+  formSection FormSection[]
+    
+  // Define a one-to-many relationship between StaticForm and StaticFormResponse
+  responses FormResponse[]
+}
+
+model FormSection {
+  sectionId    String @id @default(cuid())
+  sectionOrder Int    @default(sequence())
+  sectionName  String @default("New Section")
+  sectionDesc  String @default("New Section Description")
+
+  // Define a one-to-many relationship between FormSection and FormField
+  FormField FormField[]
+
+  // Define a many-to-one relationship between Form and FormStatic
+  formFk    Form @relation(fields: [formId], references: [formId])
+  formId    String
+}
+
+// question(s) of the form
+model FormField {
+  fieldId        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  label     String
+  type      FormFieldType
+  required  Boolean   @default(true)
+  order     Int
+
+  // Define a zero-to-many relationship between FormField and FormFieldOptions
+  optionsId   FormFieldOptions?
+
+  // Define a many-to-one relationship between FormField and FormSection
+  formSectionFk    FormSection @relation(fields: [sectionId], references: [sectionId])
+  sectionId    String
+
+  answers   FormAnswer[]
+}
+
+// options if the question is close-ended
+model FormFieldOptions {
+  optionsId        String      @id @default(cuid())
+  value     String[]
+
+  // Define a many-to-zero relationship between FormFieldOptions and FormField
+  formFieldFk     FormField @relation(fields: [fieldId], references: [fieldId])
+  fieldId   String      @unique
+
+}
+
+// Enumeration to represent field types
+enum FormFieldType {
+  TEXT
+  NUMBER
+  EMAIL
+  CHECKBOX // multi-select
+  RADIO // single-select
+  SELECT // dropdown
+}
+
+// store user responses
+model FormResponse {
+  responseId String             @id @default(cuid())
+  submittedAt  DateTime         @default(now())
+  updatedAt  DateTime           @updatedAt
+  submittedBy     String
+
+  // Define a many-to-one relationship between FormResponse and Form
+  formFk     Form         @relation(fields: [formId], references: [formId])
+  formId     String
+
+  // Define a one-to-many relationship between FormResponse and FormAnswer
+  answers    FormAnswer[]
+}
+
+// store answers for each question
+model FormAnswer {
+  id         String                @id @default(cuid())
+  value      String?
+
+  // Define a many-to-one relationship between FormAnswer and FormResponse
+  response   FormResponse @relation(fields: [responseId], references: [responseId])
+  responseId String
+
+  // Define a one-to-one relationship between FormAnswer and FormField
+  field      FormField    @relation(fields: [fieldId], references: [fieldId])
+  fieldId    String
 }
