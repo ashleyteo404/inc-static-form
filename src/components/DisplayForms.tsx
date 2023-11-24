@@ -4,7 +4,7 @@ function DisplayForms() {
   
 
   return (
-    <div className='text-white'>DisplayForms</div>
+    <div>DisplayForms</div>
   )
 }
 

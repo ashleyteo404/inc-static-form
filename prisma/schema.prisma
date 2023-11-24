@@ -74,7 +74,7 @@ model VerificationToken {
 
 // overall form
 model Form {
-  formId        String       @id @default(cuid())
+  formId    String    @id @default(cuid())
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   createdBy String
@@ -105,7 +105,7 @@ model FormSection {
 
 // question(s) of the form
 model FormField {
-  fieldId        String    @id @default(cuid())
+  fieldId   String    @id @default(cuid())
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -135,7 +135,7 @@ model FormFieldOptions {
 
 }
 
-// Enumeration to represent field types
+// enumeration to represent field types
 enum FormFieldType {
   TEXT
   NUMBER
@@ -147,10 +147,10 @@ enum FormFieldType {
 
 // store user responses
 model FormResponse {
-  responseId String             @id @default(cuid())
-  submittedAt  DateTime         @default(now())
-  updatedAt  DateTime           @updatedAt
-  submittedBy     String
+  responseId    String             @id @default(cuid())
+  submittedAt   DateTime         @default(now())
+  updatedAt     DateTime           @updatedAt
+  submittedBy   String
 
   // Define a many-to-one relationship between FormResponse and Form
   formFk     Form         @relation(fields: [formId], references: [formId])
@@ -163,7 +163,7 @@ model FormResponse {
 // store answers for each question
 model FormAnswer {
   id         String                @id @default(cuid())
-  value      String?
+  answer     Json?
 
   // Define a many-to-one relationship between FormAnswer and FormResponse
   response   FormResponse @relation(fields: [responseId], references: [responseId])
