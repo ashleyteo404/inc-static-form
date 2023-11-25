@@ -1,7 +1,6 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
-import DisplayForms from "~/components/DisplayForms";
 
 import { api } from "~/utils/api";
 
@@ -47,13 +46,26 @@ function AuthShowcase() {
         {secretMessage && <span> - {secretMessage}</span>}
       </p>
       {sessionData && (
-        <Link href={`/form/createForm`}>
+        <Link href={`/form/CreateStaticForm`}>
           <span>
-            Create New Form
+            Create Static Form
           </span>
         </Link>
       )}
-      {sessionData && <DisplayForms />}
+      {sessionData && (
+        <Link href={`/form/CreateForm`}>
+          <span>
+            Create Dynamic Form - incomplete
+          </span>
+        </Link>
+      )}
+      {sessionData && (
+        <Link href={`/form/DisplayForms`}>
+          <span>
+            View All Forms
+          </span>
+        </Link>
+      )}
       <button
         className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
         onClick={sessionData ? () => void signOut() : () => void signIn()}

@@ -118,26 +118,27 @@ model FormField {
   optionsId   FormFieldOptions?
 
   // Define a many-to-one relationship between FormField and FormSection
-  formSectionFk    FormSection @relation(fields: [sectionId], references: [sectionId])
-  sectionId    String
+  formSectionFk FormSection @relation(fields: [sectionId], references: [sectionId])
+  sectionId     String
 
   answers   FormAnswer[]
 }
 
 // options if the question is close-ended
 model FormFieldOptions {
-  optionsId        String      @id @default(cuid())
+  optionsId String      @id @default(cuid())
   value     String[]
 
   // Define a many-to-zero relationship between FormFieldOptions and FormField
-  formFieldFk     FormField @relation(fields: [fieldId], references: [fieldId])
-  fieldId   String      @unique
+  formFieldFk FormField @relation(fields: [fieldId], references: [fieldId])
+  fieldId     String    @unique
 
 }
 
 // enumeration to represent field types
 enum FormFieldType {
   TEXT
+  TEXTAREA
   NUMBER
   EMAIL
   CHECKBOX // multi-select
@@ -147,9 +148,9 @@ enum FormFieldType {
 
 // store user responses
 model FormResponse {
-  responseId    String             @id @default(cuid())
+  responseId    String           @id @default(cuid())
   submittedAt   DateTime         @default(now())
-  updatedAt     DateTime           @updatedAt
+  updatedAt     DateTime         @updatedAt
   submittedBy   String
 
   // Define a many-to-one relationship between FormResponse and Form
@@ -162,14 +163,14 @@ model FormResponse {
 
 // store answers for each question
 model FormAnswer {
-  id         String                @id @default(cuid())
+  id         String         @id @default(cuid())
   answer     Json?
 
   // Define a many-to-one relationship between FormAnswer and FormResponse
-  response   FormResponse @relation(fields: [responseId], references: [responseId])
-  responseId String
+  responseFk  FormResponse @relation(fields: [responseId], references: [responseId])
+  responseId  String
 
   // Define a one-to-one relationship between FormAnswer and FormField
-  field      FormField    @relation(fields: [fieldId], references: [fieldId])
-  fieldId    String
+  fieldFk FormField    @relation(fields: [fieldId], references: [fieldId])
+  fieldId String
 }
